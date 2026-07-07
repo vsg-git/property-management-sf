@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <name>Send_One_Day_Reminder</name>
+        <label>Send One Day Reminder</label>
+        <locationX>440</locationX>
+        <locationY>350</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <elementReference>$Record.Tenant__r.Email__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>Your lease agreement expires tomorrow</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>One_Day_Body</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+    </actionCalls>
+    <actionCalls>
+        <name>Send_One_Month_Reminder</name>
+        <label>Send One Month Reminder</label>
+        <locationX>176</locationX>
+        <locationY>350</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <elementReference>$Record.Tenant__r.Email__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>Your lease agreement expires in one month</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>One_Month_Body</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+    </actionCalls>
+    <apiVersion>67.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Evaluate_Expiry_Window</name>
+        <label>Evaluate Expiry Window</label>
+        <locationX>308</locationX>
+        <locationY>242</locationY>
+        <defaultConnectorLabel>No Reminder</defaultConnectorLabel>
+        <rules>
+            <name>One_Month_Out</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.End_Date__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>OneMonthTarget</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_One_Month_Reminder</targetReference>
+            </connector>
+            <label>One Month Out</label>
+        </rules>
+        <rules>
+            <name>One_Day_Out</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.End_Date__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>OneDayTarget</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_One_Day_Reminder</targetReference>
+            </connector>
+            <label>One Day Out</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <name>One_Day_Body</name>
+        <dataType>String</dataType>
+        <expression>&quot;Dear &quot; &amp; {!$Record.Tenant__r.Name} &amp; &quot;, This is a reminder that the lease agreement &quot; &amp; {!$Record.Name} &amp; &quot; expires tomorrow, &quot; &amp; TEXT({!$Record.End_Date__c}) &amp; &quot;. Please contact the property management team as soon as possible. Regards, Property Management Team&quot;</expression>
+    </formulas>
+    <formulas>
+        <name>One_Month_Body</name>
+        <dataType>String</dataType>
+        <expression>&quot;Dear &quot; &amp; {!$Record.Tenant__r.Name} &amp; &quot;, This is a reminder that the lease agreement &quot; &amp; {!$Record.Name} &amp; &quot; expires on &quot; &amp; TEXT({!$Record.End_Date__c}) &amp; &quot;, one month from today. Please contact the property management team to discuss renewal. Regards, Property Management Team&quot;</expression>
+    </formulas>
+    <formulas>
+        <name>OneDayTarget</name>
+        <dataType>Date</dataType>
+        <expression>TODAY() + 1</expression>
+    </formulas>
+    <formulas>
+        <name>OneMonthTarget</name>
+        <dataType>Date</dataType>
+        <expression>TODAY() + 30</expression>
+    </formulas>
+    <interviewLabel>Lease Expiry Reminders {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Lease Expiry Reminders</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>176</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Evaluate_Expiry_Window</targetReference>
+        </connector>
+        <object>Lease_Agreement__c</object>
+        <schedule>
+            <frequency>Daily</frequency>
+            <startDate>2026-07-04</startDate>
+            <startTime>06:00:00.000Z</startTime>
+        </schedule>
+        <triggerType>Scheduled</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

@@ -1,0 +1,17 @@
+<template>
+    <lightning-card title="Location" icon-name="standard:location">
+        <div class="slds-p-horizontal_small">
+            <template if:true={hasMarkers}>
+                <div style="height: 400px;">
+                    <lightning-map
+                        map-markers={mapMarkers}
+                        zoom-level={zoomLevel}
+                    ></lightning-map>
+                </div>
+            </template>
+            <template if:false={hasMarkers}>
+                <div class="slds-p-around_medium slds-text-color_weak">{errorMessage}</div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

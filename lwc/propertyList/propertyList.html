@@ -1,0 +1,117 @@
+<template>
+    <lightning-card title="Properties" icon-name="standard:home">
+        <lightning-button
+            slot="actions"
+            label={filterToggleLabel}
+            icon-name="utility:filterList"
+            onclick={toggleFilters}
+        ></lightning-button>
+
+        <template if:true={showFilters}>
+            <div class="slds-p-horizontal_medium">
+                <lightning-layout multiple-rows="true" horizontal-align="spread">
+                    <lightning-layout-item size="6" padding="around-small">
+                        <lightning-input
+                            type="number"
+                            label="Min Rent"
+                            min="0"
+                            value={minPrice}
+                            onchange={handleMinPrice}
+                        ></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6" padding="around-small">
+                        <lightning-input
+                            type="number"
+                            label="Max Rent"
+                            min="0"
+                            value={maxPrice}
+                            onchange={handleMaxPrice}
+                        ></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6" padding="around-small">
+                        <lightning-combobox
+                            label="Availability"
+                            value={status}
+                            options={statusOptions}
+                            onchange={handleStatus}
+                        ></lightning-combobox>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6" padding="around-small">
+                        <lightning-combobox
+                            label="Furnishing"
+                            value={furnishingStatus}
+                            options={furnishingOptions}
+                            onchange={handleFurnishing}
+                        ></lightning-combobox>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="6" padding="around-small">
+                        <lightning-input
+                            type="number"
+                            label="Nearby (km)"
+                            min="0"
+                            field-level-help="Only properties with a saved location are included in the Nearby results."
+                            value={radiusKm}
+                            onchange={handleRadius}
+                        ></lightning-input>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12" padding="around-small">
+                        <lightning-button
+                            variant="brand"
+                            label="Apply Filters"
+                            class="slds-m-right_x-small"
+                            onclick={handleApplyFilters}
+                        ></lightning-button>
+                        <lightning-button
+                            label="Clear"
+                            onclick={handleClearFilters}
+                        ></lightning-button>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </div>
+        </template>
+
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>
+
+        <template if:true={errorMessage}>
+            <div class="slds-text-color_error slds-p-around_medium">{errorMessage}</div>
+        </template>
+
+        <div class="slds-p-horizontal_small">
+            <template if:true={showEmptyState}>
+                <div class="slds-align_absolute-center slds-p-around_large slds-text-color_weak">
+                    No properties found.
+                </div>
+            </template>
+            <template if:false={showEmptyState}>
+                <lightning-datatable
+                    key-field="Id"
+                    data={records}
+                    columns={columns}
+                    sorted-by={sortedBy}
+                    sorted-direction={sortedDirection}
+                    onsort={handleSort}
+                    onrowaction={handleRowAction}
+                    hide-checkbox-column
+                ></lightning-datatable>
+            </template>
+        </div>
+
+        <div slot="footer" class="slds-grid slds-grid_align-spread">
+            <lightning-button
+                label="Previous"
+                onclick={handlePrevious}
+                disabled={disablePrevious}
+                data-id="previous"
+            ></lightning-button>
+            <span class="slds-align-middle">{showingLabel}</span>
+            <lightning-button
+                label="Next"
+                onclick={handleNext}
+                disabled={disableNext}
+                data-id="next"
+            ></lightning-button>
+        </div>
+    </lightning-card>
+</template>

@@ -1,0 +1,53 @@
+<template>
+    <lightning-card title="New Property" icon-name="standard:home">
+        <div class="slds-p-horizontal_medium">
+            <template if:true={isSaving}>
+                <lightning-spinner alternative-text="Saving" size="medium"></lightning-spinner>
+            </template>
+
+            <lightning-input label="Name" data-field="Name" value={form.Name} onchange={handleFieldChange} required></lightning-input>
+            <lightning-input label="Address" data-field="Street__c" value={form.Street__c} onchange={handleFieldChange} required></lightning-input>
+            <lightning-input label="City" data-field="City__c" value={form.City__c} onchange={handleFieldChange} required></lightning-input>
+            <lightning-input label="State" data-field="State__c" value={form.State__c} onchange={handleFieldChange} required></lightning-input>
+            <lightning-input label="Postal Code" data-field="Postal_Code__c" value={form.Postal_Code__c} onchange={handleFieldChange} required></lightning-input>
+            <lightning-input label="Country" data-field="Country__c" value={form.Country__c} onchange={handleFieldChange} required></lightning-input>
+            <lightning-combobox label="Type" data-field="Type__c" value={form.Type__c} options={typeOptions} onchange={handlePicklistChange} required></lightning-combobox>
+            <lightning-combobox label="Furnishing Status" data-field="Furnishing_Status__c" value={form.Furnishing_Status__c} options={furnishingOptions} onchange={handlePicklistChange}></lightning-combobox>
+            <lightning-combobox label="Status" data-field="Status__c" value={form.Status__c} options={statusOptions} onchange={handlePicklistChange} required></lightning-combobox>
+            <lightning-input type="number" label="Rent (INR)" min="0" data-field="Rent__c" value={form.Rent__c} onchange={handleFieldChange} required></lightning-input>
+            <lightning-textarea label="Description" data-field="Description__c" value={form.Description__c} onchange={handleFieldChange} required></lightning-textarea>
+
+            <div class="slds-p-vertical_small">
+                <lightning-input
+                    type="file"
+                    label="Property Images"
+                    data-id="fileInput"
+                    accept="image/*"
+                    onchange={handleFilesChange}
+                    multiple
+                ></lightning-input>
+                <template if:true={hasFiles}>
+                    <div class="slds-text-body_small slds-p-top_x-small">{fileSummary}</div>
+                </template>
+                <template if:true={fileError}>
+                    <div class="slds-text-color_error">At least one image is required.</div>
+                </template>
+            </div>
+        </div>
+
+        <div slot="footer">
+            <lightning-button
+                variant="brand"
+                label="Save"
+                class="slds-m-right_x-small"
+                onclick={handleSubmit}
+                disabled={isSaving}
+            ></lightning-button>
+            <lightning-button
+                label="Clear"
+                onclick={handleClear}
+                disabled={isSaving}
+            ></lightning-button>
+        </div>
+    </lightning-card>
+</template>
